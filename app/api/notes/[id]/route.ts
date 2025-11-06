@@ -3,27 +3,27 @@ import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/dbConnect";
 import Note from "@/models/Note";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../../../lib/auth"; // adjust path if your auth route is at a different location
-
-type Params = { params: { id?: string } };
+import { authOptions } from "@/lib/auth"; // ensure this path is correct
 
 async function getUserId() {
   const session = await getServerSession(authOptions);
-  // fallback to "guest" so anonymous users work too
   return session?.user?.id ?? "guest";
 }
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
+function badRequest(msg = "Bad request") {
+  return NextResponse.json({ error: msg }, { status: 400 });
+}
+
+export async function GET(_req: Request, context: any) {
   try {
-    if (!params?.id) {
-      return NextResponse.json({ error: "Missing note id" }, { status: 400 });
-    }
+    const params = context?.params ?? {};
+    const id = params?.id;
+    if (!id || typeof id !== "string") return badRequest("Missing or invalid note id");
 
     await dbConnect();
     const userId = await getUserId();
 
-    const note = await Note.findOne({ _id: params.id, userId }).lean();
+    const note = await Note.findOne({ _id: id, userId }).lean();
     return NextResponse.json({ note: note ?? null }, { status: 200 });
   } catch (err: unknown) {
     console.error("GET /api/notes/[id] error:", err);
@@ -34,11 +34,11 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function PUT(req: Request, { params }: Params) {
+export async function PUT(req: Request, context: any) {
   try {
-    if (!params?.id) {
-      return NextResponse.json({ error: "Missing note id" }, { status: 400 });
-    }
+    const params = context?.params ?? {};
+    const id = params?.id;
+    if (!id || typeof id !== "string") return badRequest("Missing or invalid note id");
 
     const body = await req.json().catch(() => null);
     if (!body || typeof body !== "object") {
@@ -49,7 +49,7 @@ export async function PUT(req: Request, { params }: Params) {
     const userId = await getUserId();
 
     const note = await Note.findOneAndUpdate(
-      { _id: params.id, userId },
+      { _id: id, userId },
       { $set: body },
       { new: true, runValidators: true }
     ).lean();
@@ -68,16 +68,16 @@ export async function PUT(req: Request, { params }: Params) {
   }
 }
 
-export async function DELETE(_req: Request, { params }: Params) {
+export async function DELETE(_req: Request, context: any) {
   try {
-    if (!params?.id) {
-      return NextResponse.json({ error: "Missing note id" }, { status: 400 });
-    }
+    const params = context?.params ?? {};
+    const id = params?.id;
+    if (!id || typeof id !== "string") return badRequest("Missing or invalid note id");
 
     await dbConnect();
     const userId = await getUserId();
 
-    const deleted = await Note.findOneAndDelete({ _id: params.id, userId });
+    const deleted = await Note.findOneAndDelete({ _id: id, userId });
 
     if (!deleted) {
       return NextResponse.json({ error: "Note not found or unauthorized" }, { status: 404 });
