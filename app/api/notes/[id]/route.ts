@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/dbConnect";
 import Note from "@/models/Note";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // adjust path if your auth route is at a different location
+import { authOptions } from "../../../../lib/auth"; // adjust path if your auth route is at a different location
 
 type Params = { params: { id?: string } };
 

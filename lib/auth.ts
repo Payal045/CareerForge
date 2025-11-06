@@ -1,16 +1,15 @@
 // lib/auth.ts
-import NextAuth, { NextAuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
-import clientPromise from "./clientPromise"; // adjust path if clientPromise is elsewhere
+import clientPromise from "@/lib/clientPromise";
 import bcrypt from "bcrypt";
 
 export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
   providers: [
-    // OAuth providers
     GitHubProvider({
       clientId: process.env.GITHUB_ID ?? "",
       clientSecret: process.env.GITHUB_SECRET ?? "",
@@ -19,8 +18,7 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
     }),
-
-    // Guest provider
+    // guest credentials
     CredentialsProvider({
       id: "guest",
       name: "Guest",
@@ -34,8 +32,7 @@ export const authOptions: NextAuthOptions = {
         } as any;
       },
     }),
-
-    // Email/password credentials provider
+    // real credentials
     CredentialsProvider({
       id: "credentials",
       name: "Credentials",
@@ -45,16 +42,12 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null;
-
         const client = await clientPromise;
         const db = client.db();
         const user = await db.collection("users").findOne({ email: credentials.email });
-
         if (!user || !user.password) return null;
-
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) return null;
-
         return { id: user._id.toString(), name: user.name, email: user.email } as any;
       },
     }),
@@ -77,11 +70,10 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).id = (token.id as string) ?? "guest";
-        (session.user as any).isGuest = Boolean(token.isGuest);
+        session.user.id = (token.id as string) ?? "guest";
+        session.user.isGuest = Boolean(token.isGuest);
       }
       return session;
     },
@@ -92,7 +84,6 @@ export const authOptions: NextAuthOptions = {
   },
 
   debug: process.env.NODE_ENV === "development",
-  secret: process.env.NEXTAUTH_SECRET ?? process.env.SECRET ?? undefined,
 };
 
 export default authOptions;
