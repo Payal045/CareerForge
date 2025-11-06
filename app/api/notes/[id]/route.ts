@@ -13,7 +13,7 @@ async function getUserId() {
   return session?.user?.id ?? "guest";
 }
 
-export async function GET(_req: Request, { params }: Params) {
+export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
     if (!params?.id) {
       return NextResponse.json({ error: "Missing note id" }, { status: 400 });
