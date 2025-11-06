@@ -14,6 +14,7 @@ async function getUserId() {
 }
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
+  const { id } = params;
   try {
     if (!params?.id) {
       return NextResponse.json({ error: "Missing note id" }, { status: 400 });
