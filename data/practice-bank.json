@@ -1,0 +1,43 @@
+[
+  {
+    "id": "web-001",
+    "roadmap": "web",
+    "type": "quiz",
+    "difficulty": "Easy",
+    "topic": "HTML",
+    "title": "HTML Basics: semantic tags",
+    "question": "Which tag is used for page headings?",
+    "options": ["<head>", "<header>", "<h1>", "<title>"],
+    "answerIndex": 2
+  },
+  {
+    "id": "web-002",
+    "roadmap": "web",
+    "type": "short",
+    "difficulty": "Medium",
+    "topic": "CSS",
+    "title": "CSS Layout",
+    "prompt": "Explain the difference between Flexbox and Grid in 2–3 lines."
+  },
+  {
+    "id": "web-003",
+    "roadmap": "web",
+    "type": "coding",
+    "difficulty": "Hard",
+    "topic": "JavaScript",
+    "title": "Reverse string",
+    "description": "Write a function that returns a reversed string. Input: 'hello' -> 'olleh'. Provide code and short explanation."
+  },
+
+  {
+    "id": "ml-001",
+    "roadmap": "ml",
+    "type": "quiz",
+    "difficulty": "Easy",
+    "topic": "ML Basics",
+    "title": "Supervised vs Unsupervised",
+    "question": "Which one is supervised learning?",
+    "options": ["K-means", "Linear regression", "PCA", "DBSCAN"],
+    "answerIndex": 1
+  }
+]
