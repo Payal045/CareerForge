@@ -10,10 +10,10 @@ function todayIso() {
 export function readGuestStreak(): StreakInfo {
   try {
     const raw = typeof window !== "undefined" ? window.localStorage.getItem(GUEST_KEY) : null;
-    if (!raw) return { streak: 0, lastActive: null };
+    if (!raw) return { streak: 1, lastActive: null }; // <-- default to 1
     return JSON.parse(raw) as StreakInfo;
   } catch {
-    return { streak: 0, lastActive: null };
+    return { streak: 1, lastActive: null }; // <-- default to 1 on error
   }
 }
 
@@ -42,5 +42,6 @@ export function touchGuestStreak(): StreakInfo {
 }
 
 export function resetGuestStreak() {
-  writeGuestStreak({ streak: 0, lastActive: null });
+  // keep canonical guest at 1 (not 0)
+  writeGuestStreak({ streak: 1, lastActive: null });
 }
