@@ -91,7 +91,7 @@ export default function DashboardClient() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100 pt-18">
+    <div className="flex min-h-screen bg-gray-100">
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
